@@ -1,19 +1,25 @@
-db:
-  #build: postgres-gnuhealth
-  image: mbsolutions/postgres-gnuhealth:3.0
-  volumes:
-    - ./postgresql-data:/var/lib/postgresql/data
-  environment:
-    - POSTGRES_PASSWORD=mysecret
+services:
+  
+  db:
+    # build: postgres-gnuhealth
+    image: postgres:14
+    volumes:
+      - ./postgresql-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=gnuhealth
+      - POSTGRES_DB=health
+      - POSTGRES_PASSWORD=mysecret
 
-tryton:
-  #build: tryton-server-gnuhealth
-  image: mbsolutions/tryton-server-gnuhealth:3.8
-  volumes:
-    - ./tryton-data:/var/lib/tryton
-  environment:
-    - TRYTOND_PASSWORD=admin
-  ports:
-    - "8000:8000"
-  links:
-    - db
+  tryton:
+    build: tryton-server-gnuhealth
+    depends_on:
+      - db
+    # image: mbsolutions/tryton-server-gnuhealth:3.8
+    volumes:
+      - ./tryton-data:/var/lib/tryton
+    environment:
+      - TRYTOND_PASSWORD=admin
+    ports:
+      - "8000:8000"
+    links:
+      - db
